@@ -12,4 +12,4 @@ app.use('/users', userRoutes); // Gestion des utilisateurs
 // Démarrer le serveur
 app.listen(3000, () => {
     console.log('Serveur démarré sur http://localhost:3000');
-});
+})
