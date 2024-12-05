@@ -1,16 +1,10 @@
 const express = require('express');
-const { getUsers, createUser, updateUser, deleteUser, getProfile, updateProfile } = require('../controllers/userController');
-const { isAuthenticated, isAdmin } = require('../middlewares/authMiddleware');
+const { getUsers, createUser, updateUser, deleteUser } = require('./usercontroller');
 const router = express.Router();
 
-// Admin uniquement
-router.get('/', isAuthenticated, isAdmin, getUsers);
-router.post('/', isAuthenticated, isAdmin, createUser);
-router.put('/:id', isAuthenticated, isAdmin, updateUser);
-router.delete('/:id', isAuthenticated, isAdmin, deleteUser);
-
-// Utilisateur simple
-router.get('/profile', isAuthenticated, getProfile);
-router.put('/profile', isAuthenticated, updateProfile);
+router.get('/', getUsers); // Voir tous les utilisateurs
+router.post('/', createUser); // Ajouter un utilisateur
+router.put('/:id', updateUser); // Modifier un utilisateur
+router.delete('/:id', deleteUser); // Supprimer un utilisateur
 
 module.exports = router;
