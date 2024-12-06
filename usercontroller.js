@@ -1,5 +1,5 @@
 const db = require('./dbb');
-const bcrypt = require('bcryptjs');
+
 
 exports.getUsers = async (req, res) => {
     try {
