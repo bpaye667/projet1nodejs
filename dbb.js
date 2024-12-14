@@ -1,10 +1,13 @@
-const mysql = require('mysql2');
+const mongoose = require('mongoose');
 
-const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: 'votre_mot_de_passe',
-    database: 'votre_base_de_donnees'
+mongoose.connect('mongodb://localhost:27017/gestionBancaire', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true
+}).then(() => {
+  console.log('Connexion à la base de données réussie');
+}).catch(err => {
+  console.error('Erreur de connexion à la base de données:', err);
 });
 
-module.exports = pool.promise();
+module.exports = mongoose;

@@ -1,10 +1,11 @@
-const express = require('express');
-const { getUsers, createUser, updateUser, deleteUser } = require('./usercontroller');
-const router = express.Router();
+const mongoose = require('mongoose');
 
-router.get('/', getUsers); // Voir tous les utilisateurs
-router.post('/', createUser); // Ajouter un utilisateur
-router.put('/:id', updateUser); // Modifier un utilisateur
-router.delete('/:id', deleteUser); // Supprimer un utilisateur
+const userSchema = new mongoose.Schema({
+  firstname: String,
+  lastname: String,
+  login: { type: String, unique: true },
+  password: String,
+  role: { type: String, default: 'user' }
+});
 
-module.exports = router;
+module.exports = mongoose.model('User', userSchema);

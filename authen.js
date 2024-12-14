@@ -1,22 +1,28 @@
 const express = require('express');
-const db = require('./dbb');
-
+const User = require('../models/user');
 const router = express.Router();
 
+// Connexion
 router.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-    try {
-        const [users] = await db.execute('SELECT id, username, email, role, password FROM users WHERE email = ?', [email]);
+  const { login, password } = req.body;
 
-        if (users.length === 0 || users[0].password !== password) {
-            return res.status(401).json({ message: 'Email ou mot de passe incorrect' });
-        }
-
-        res.json({ message: 'Connexion réussie', user: users[0] });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+  try {
+    const user = await User.findOne({ login, password });
+    if (!user) {
+      return res.status(401).json({ message: 'Identifiants incorrects' });
     }
+
+    req.session.user = user;
+    res.json({ message: 'Connexion réussie', user });
+  } catch (error) {
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+});
+
+// Déconnexion
+router.post('/logout', (req, res) => {
+  req.session.destroy();
+  res.json({ message: 'Déconnexion réussie' });
 });
 
 module.exports = router;
-

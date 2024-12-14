@@ -1,17 +1,10 @@
-
-
-exports.verifyAdmin = (req, res, next) => {
-    const user = req.user; // Simuler un utilisateur extrait d'une authentification
-    if (user.role !== 'admin') {
-        return res.status(403).json({ message: 'Accès refusé : Administrateurs uniquement' });
+function authMiddleware(req, res, next) {
+    if (req.session && req.session.user) {
+      next();
+    } else {
+      res.status(401).json({ message: 'Accès refusé. Veuillez vous connecter.' });
     }
-    next();
-};
-
-exports.verifyUser = (req, res, next) => {
-    // Supposons que l'utilisateur soit extrait d'un middleware précédent
-    if (!req.user) {
-        return res.status(401).json({ message: 'Utilisateur non authentifié' });
-    }
-    next();
-};
+  }
+  
+  module.exports = authMiddleware;
+  

@@ -1,62 +1,27 @@
-const db = require('./dbb');
+const express = require('express');
+const router = express.Router();
+const User = require('../models/user');
 
-exports.getUsers = async (req, res) => {
-    try {
-        const [users] = await db.execute('SELECT id, username, email, role FROM users');
-        res.json(users);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
+// Obtenir tous les utilisateurs
+router.get('/', async (req, res) => {
+  try {
+    const users = await User.find();
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+});
 
-exports.createUser = async (req, res) => {
-    const { username, email, password, role } = req.body;
-    try {
-        await db.execute('INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)', [username, email, password, role]);
-        res.status(201).json({ message: 'Utilisateur créé avec succès !' });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
+// Ajouter un nouvel utilisateur
+router.post('/', async (req, res) => {
+  const { firstname, lastname, login, password, role } = req.body;
+  try {
+    const newUser = new User({ firstname, lastname, login, password, role });
+    await newUser.save();
+    res.status(201).json(newUser);
+  } catch (error) {
+    res.status(400).json({ message: 'Erreur lors de l\'ajout' });
+  }
+});
 
-exports.updateUser = async (req, res) => {
-    const { id } = req.params;
-    const { username, email, role } = req.body;
-    try {
-        await db.execute('UPDATE users SET username = ?, email = ?, role = ? WHERE id = ?', [username, email, role, id]);
-        res.json({ message: 'Utilisateur mis à jour avec succès !' });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
-exports.deleteUser = async (req, res) => {
-    const { id } = req.params;
-    try {
-        await db.execute('DELETE FROM users WHERE id = ?', [id]);
-        res.json({ message: 'Utilisateur supprimé avec succès !' });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
-exports.getProfile = async (req, res) => {
-    const { id } = req.user; // Récupéré via le middleware d'authentification
-    try {
-        const [users] = await db.execute('SELECT username, email FROM users WHERE id = ?', [id]);
-        res.json(users[0]);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
-exports.updateProfile = async (req, res) => {
-    const { id } = req.user;
-    const { username, email } = req.body;
-    try {
-        await db.execute('UPDATE users SET username = ?, email = ? WHERE id = ?', [username, email, id]);
-        res.json({ message: 'Profil mis à jour avec succès !' });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
+module.exports = router;
